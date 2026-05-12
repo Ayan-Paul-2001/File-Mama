@@ -34,4 +34,6 @@ exe = EXE(
     codesign_identity=None,
     entitlements_file=None,
     icon='icon.ico',
+    manifest='FileMama.manifest',
+    version='version_info.txt',
 )
