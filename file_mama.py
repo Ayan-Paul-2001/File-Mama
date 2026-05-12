@@ -147,16 +147,21 @@ class App(tk.Tk):
         self.configure(bg=BG)
         icon_path = resource_path("icon.ico")
         if os.path.exists(icon_path): self.iconbitmap(icon_path)
-        self.resizable(False, False)
+        self.title("File Mama")
+        self.configure(bg=BG)
+        icon_path = resource_path("icon.ico")
+        if os.path.exists(icon_path): self.iconbitmap(icon_path)
+        self.resizable(True, True)
+        self.minsize(660, 500)
         self._build()
         self._scan()
         self._center()
 
     def _center(self):
         self.update_idletasks()
-        w, h = self.winfo_width(), self.winfo_height()
+        w, h = 660, 600
         sw, sh = self.winfo_screenwidth(), self.winfo_screenheight()
-        self.geometry(f"+{(sw-w)//2}+{(sh-h)//2}")
+        self.geometry(f"{w}x{h}+{(sw-w)//2}+{(sh-h)//2}")
 
     def _label(self, parent, text, font_size=9, bold=False, color=None, **kw):
         weight = "bold" if bold else "normal"
@@ -175,8 +180,8 @@ class App(tk.Tk):
                        highlightthickness=1)
         src.pack(fill="x", padx=24)
         self._label(src, "TARGET DIRECTORY", 7, bold=True, color=DIM, bg=CARD).pack(anchor="w")
-        self.src_lbl = self._label(src, "", 8, color=ACC, bg=CARD, wraplength=540, justify="left")
-        self.src_lbl.pack(anchor="w", pady=(3,0))
+        self.src_lbl = self._label(src, "", 8, color=ACC, bg=CARD, wraplength=800, justify="left")
+        self.src_lbl.pack(anchor="w", pady=(3,0), fill="x")
         self.src_type = self._label(src, "", 7, color=DIM, bg=CARD)
         self.src_type.pack(anchor="w", pady=(1,0))
 
@@ -184,17 +189,25 @@ class App(tk.Tk):
 
         hdr = tk.Frame(self, bg=PANEL, padx=24, pady=8)
         hdr.pack(fill="x")
-        for txt, w in [("FILE NAME",36),("TYPE",7),("→ DESTINATION",20)]:
-            self._label(hdr, txt, 7, bold=True, color=DIM, bg=PANEL, width=w, anchor="w").pack(side="left")
+        self._label(hdr, "FILE NAME", 7, bold=True, color=DIM, bg=PANEL, anchor="w").pack(side="left", fill="x", expand=True)
+        self._label(hdr, "TYPE", 7, bold=True, color=DIM, bg=PANEL, width=10, anchor="w").pack(side="left")
+        self._label(hdr, "→ DESTINATION", 7, bold=True, color=DIM, bg=PANEL, width=20, anchor="w").pack(side="left")
 
         list_wrap = tk.Frame(self, bg=BG)
         list_wrap.pack(fill="both", expand=True, padx=0)
-        self.canvas = tk.Canvas(list_wrap, bg=BG, highlightthickness=0, height=300, width=640)
+        self.canvas = tk.Canvas(list_wrap, bg=BG, highlightthickness=0, height=300)
         sb = tk.Scrollbar(list_wrap, orient="vertical", command=self.canvas.yview)
         self.inner = tk.Frame(self.canvas, bg=BG)
+        
+        self.inner_id = self.canvas.create_window((0,0), window=self.inner, anchor="nw")
+        
+        def _on_canvas_configure(e):
+            self.canvas.itemconfig(self.inner_id, width=e.width)
+        self.canvas.bind("<Configure>", _on_canvas_configure)
+        
         self.inner.bind("<Configure>", lambda e: self.canvas.configure(
             scrollregion=self.canvas.bbox("all")))
-        self.canvas.create_window((0,0), window=self.inner, anchor="nw")
+        
         self.canvas.configure(yscrollcommand=sb.set)
         self.canvas.pack(side="left", fill="both", expand=True)
         sb.pack(side="right", fill="y")
@@ -268,13 +281,12 @@ class App(tk.Tk):
             row = tk.Frame(self.inner, bg=row_bg)
             row.pack(fill="x")
 
-            name_txt = f["name"] if len(f["name"]) <= 36 else f["name"][:33] + "…"
-            self._label(row, name_txt, 9, color=FG, bg=row_bg,
-                        width=36, anchor="w", padx=20, pady=4).pack(side="left")
+            self._label(row, f["name"], 9, color=FG, bg=row_bg,
+                        anchor="w", padx=20, pady=4).pack(side="left", fill="x", expand=True)
             self._label(row, f["ext"], 8, color=DIM, bg=row_bg,
-                        width=7, anchor="w").pack(side="left")
+                        width=10, anchor="w").pack(side="left")
             self._label(row, f"→  {f['category']}\\", 9, color=ACC,
-                        bg=row_bg, anchor="w").pack(side="left")
+                        bg=row_bg, width=20, anchor="w").pack(side="left")
 
     def _run(self):
         if not self.files:
