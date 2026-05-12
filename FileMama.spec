@@ -3,7 +3,7 @@ a = Analysis(
     ['file_mama.py'],
     pathex=[],
     binaries=[],
-    datas=[],
+    datas=[('icon.ico', '.')],
     hiddenimports=['comtypes', 'comtypes.client'],
     hookspath=[],
     hooksconfig={},
@@ -33,4 +33,5 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
+    icon='icon.ico',
 )

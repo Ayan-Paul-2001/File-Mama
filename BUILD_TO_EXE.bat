@@ -31,6 +31,10 @@ if %errorlevel% neq 0 (
 echo  [OK] Packages installed
 echo.
 
+:: Cleanup old builds
+if exist build rmdir /s /q build
+if exist dist rmdir /s /q dist
+
 :: Build
 echo  Building FileMama.exe ...
 echo.

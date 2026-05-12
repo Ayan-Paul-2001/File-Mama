@@ -131,6 +131,13 @@ ERR    = "#FF4444"
 BORDER = "#252525"
 MONO   = "Consolas"
 
+def resource_path(relative_path):
+    try:
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+    return os.path.join(base_path, relative_path)
+
 class App(tk.Tk):
     def __init__(self):
         super().__init__()
@@ -138,6 +145,8 @@ class App(tk.Tk):
         self.files = []
         self.title("File Mama")
         self.configure(bg=BG)
+        icon_path = resource_path("icon.ico")
+        if os.path.exists(icon_path): self.iconbitmap(icon_path)
         self.resizable(False, False)
         self._build()
         self._scan()
